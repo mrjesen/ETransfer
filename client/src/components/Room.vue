@@ -51,11 +51,16 @@
                         <div v-if="canSend" class="flex align-items-center tools">
                             <span  class="pi pi-file text-400 hover:text-primary-300 cursor-pointer text-xl" v-tooltip="'发送文件'"  @click="chooseFile" />
                             <input type="file" ref="file" @change="sendFile" class="aman-file">
+                            <span  class="ml-4 pi pi-image text-400 hover:text-primary-300 cursor-pointer text-xl" v-tooltip="'发送图片'"  @click="chooseImage" />
+                            <input type="file" ref="imgfile" @change="sendImg" class="aman-file" accept="image/*">
+                            <span class="ml-4 pi pi-microphone text-400 hover:text-primary-300 cursor-pointer text-xl"  v-tooltip="'语音通话'"  @click="voiceSwitch" aria-disabled="true"></span>
                             <span class="ml-4 pi pi-desktop text-400 hover:text-primary-300 cursor-pointer text-xl"  v-tooltip="'分享屏幕'"  @click="shareScreen" aria-disabled="true"></span>
                         </div>
                         <div v-else class="flex align-items-center tools">
                             <span  class="pi pi-file text-300  text-xl"  />
                             <input type="file" ref="file" @change="sendFile" class="aman-file">
+                            <span  class="ml-4 pi pi-image text-300  text-xl"  />
+                            <span class="ml-4 pi pi-microphone text-300 text-xl"></span>
                             <span class="ml-4 pi pi-desktop text-300 text-xl"></span>
                         </div>
                         <div class="flex align-items-center w-full">
@@ -171,12 +176,35 @@ export default {
         chooseFile() {
             this.$refs.file.click()
         },
+        chooseImage() {
+            this.$refs.imgfile.click()
+        },
         sendFile(e) {
             const file = e.target.files[0];
             if (file.size === 0) {
                 return
             }
             this.$emit('chooseFile', file)
+        },
+        sendImg(e) {
+            const file = e.target.files[0];
+            if (file.size === 0 || !file.type.startsWith('image/')) {
+                toast.add({
+                    severity: 'danger',
+                    summary: '提示',
+                    detail: '图片不合法。',
+                    life: 3000
+                });
+                return;
+            }
+            let that = this;
+            this.fileToDataURL(file).then(dataUrl => {
+                const data = {
+                    message: dataUrl,
+                    type: "img",
+                };
+                that.$emit('sendMsg', data);
+            });
         },
 
         sendMsg(e) {
