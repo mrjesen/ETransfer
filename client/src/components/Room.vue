@@ -42,6 +42,7 @@
                         <div v-for="(msg,index) in messages" :key="index">
                             <MessageText v-if="msg.data.type==='message'" :msg="msg"></MessageText>
                             <MessageFile v-else-if="msg.data?.type==='file'" :msg="msg"></MessageFile>
+                            <MessageImg v-else-if="msg.data?.type==='img'" :msg="msg"></MessageImg>
                         </div>
                     </div>
                     <div class="pt-2 pl-3 pr-3 pb-3 md:pl-4 md:pr-4  md:pb-4 flex flex-column mt-auto border-top-1 surface-border gap-3" >
@@ -56,7 +57,7 @@
                             <span class="ml-4 pi pi-desktop text-300 text-xl"></span>
                         </div>
                         <div class="flex align-items-center w-full">
-                            <InputText class="w-full flex-1 " v-model="message" :placeholder="canSend ? '' : '等待对方连接或者建立链接失败..'"  :disabled="!canSend" @keydown.enter="sendMsg"/>
+                            <Textarea class="w-full flex-1 " v-model="message" :placeholder="canSend ? '' : '等待对方连接或者建立链接失败..'"  :disabled="!canSend" autofocus @keydown.enter.prevent="sendMsg" @keydown.enter.ctrl.exact.prevent="ctrlEnter"/>
                             <div class="w-full block w-auto ml-2">
                                 <Button  icon="pi pi-send" iconPos="left" :disabled="!canSend" @click="sendMsg"/>
                             </div>
@@ -74,9 +75,10 @@
 import Clipboard from 'clipboard';
 import Toast from 'primevue/toast'
 import {useToast} from "primevue/usetoast";
-import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
 import MessageText from "@/components/MessageText.vue";
 import MessageFile from "@/components/MessageFile.vue";
+import MessageImg from "@/components/MessageImg.vue";
 let toast;
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
@@ -84,8 +86,9 @@ export default {
     components: {
         MessageFile,
         MessageText,
+        MessageImg,
         Toast,
-        InputText,
+        Textarea,
     },
     props: {
         roomId: String,
@@ -143,8 +146,8 @@ export default {
             this.$emit('chooseFile', file)
         },
 
-        sendMsg() {
-            if (!this.message) {
+        sendMsg(e) {
+            if (!this.message || e.ctrlKey) {
                 return
             }
             const data = {
@@ -153,6 +156,17 @@ export default {
             };
             this.message = ""
             this.$emit("sendMsg", data)
+        },
+        ctrlEnter(e) {
+            // ctrl+回车换行
+            if(!e.ctrlKey) { return }
+            const textarea = e.target; //注意此处获取dom
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const value = textarea.value;
+            const newValue = value.substring(0, start) + "\n" + value.substring(end);
+            textarea.value = newValue;
+            textarea.selectionStart = textarea.selectionEnd = start + 1;
         },
         copyText(e, text) {
 

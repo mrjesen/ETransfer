@@ -22,7 +22,7 @@
             </div>
             <div class="col mt-1">
                 <span class="text-700 inline-block font-medium border-1 surface-border p-3  border-round" style="word-break: break-word; max-width: 80%;">
-                    {{ msg.data.message }}
+                    <pre class="m-0">{{ msg.data.message }}</pre>
                 </span>
                 <p class="text-700  text-sm mt-1">{{ formatTime(msg.time) }} <i
                     class="pi pi-check ml-2 text-green-400"></i></p>
@@ -34,7 +34,7 @@
                     <div
                         class="inline-block text-left font-medium border-1 surface-border bg-primary-100 text-primary-900 p-3  border-round"
                         style="word-break: break-word; max-width: 80%;">
-                        {{ msg.data.message }}
+                        <pre class="m-0">{{ msg.data.message }}</pre>
                     </div>
                     <p class="text-700 text-sm mt-1">{{ formatTime(msg.time) }} <i
                         class="pi pi-check ml-2 text-green-400"></i></p>
