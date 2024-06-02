@@ -1,13 +1,22 @@
 import {WebSocketServer} from 'ws';
 import RoomList from "./room/room.js";
-import {nanoid} from 'nanoid'
+import {nanoid} from 'nanoid';
+import https from 'https';
+import fs from 'fs';
 
-//在4000端口上打开了一个WebSocket Server，该实例由变量wss引用。
-
-const wss = new WebSocketServer({port: 9090});
+let pfxpath = './ssl.pfx';
+let options = {
+    pfx: fs.readFileSync(pfxpath),
+    passphrase: "123456",
+};
+let server = https.createServer(options, (req, res) => {
+    res.writeHead(200);
+    res.end("this is a websocket server \n");
+}).listen(9091);
+const wss = new WebSocketServer({server: server});
 
 wss.on('listening', function () {
-    console.log('WebSocket server is running on port 9090');
+    console.log('WebSocket server(https) is running on port 9091');
 })
 //如果有WebSocket请求接入，wss对象可以响应connection事件来处理这个WebSocket：
 wss.on('connection', function (client) {
