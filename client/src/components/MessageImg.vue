@@ -26,15 +26,9 @@
                     class="cursor-pointer  text-blue-500 text-700 inline-block font-medium border-1 surface-border p-3  border-round"
                     style="word-break: break-word; max-width: 80%;">
                     <div class="inline-block mr-3">
-                        <span class="mb-2 inline-block cursor-pointer "  @click="downloadFile(msg.data.file)">{{msg.data.file.name}}</span>
-                        <p v-if="msg.data.file.size===msg.data.file.totalSize" class="m-0 text-500 text-sm font-normal flex justify-content-between">
-                            {{getSize(msg.data.file.totalSize)}}
-                        </p>
-                        <p v-else class="m-0 text-500 text-sm font-normal">{{(msg.data.file.size/msg.data.file.totalSize*100).toFixed(0)}}%</p>
+                        <span class="mb-2 inline-block cursor-pointer ">{{msg.data.message}}</span>
                     </div>
                 </div>
-
-
                 <p class="text-700  text-sm mt-1">{{ formatTime(msg.time) }}
                     <i class="pi pi-check ml-2 text-green-400"></i>
                 </p>
@@ -47,11 +41,9 @@
                         class=" text-blue-500 inline-block text-left  bg-primary-100 p-3 font-medium border-round"
                         style="word-break: break-word; max-width: 80%;">
                         <div class="inline-block mr-3">
-                            <span class="mb-2 inline-block cursor-pointer " @click="downloadFile(msg.data.file)">{{msg.data.file.name}}</span>
-                            <p v-if="msg.data.file.size===msg.data.file.totalSize" class="m-0 text-500 text-sm font-normal">
-                                {{getSize(msg.data.file.totalSize)}}
-                            </p>
-                            <p v-else class="m-0 text-500 text-sm font-normal">{{(msg.data.file.size/msg.data.file.totalSize*100).toFixed(0)}}%</p>
+                            <span class="mb-2 inline-block cursor-pointer ">
+                                <Image alt="Image" :src="msg.data.message" width="250" preview></Image>
+                            </span>
                         </div>
                     </div>
                     <p class="text-700 text-sm mt-1">{{ formatTime(msg.time) }}
@@ -64,6 +56,8 @@
 </template>
 
 <script>
+import Image from 'primevue/image';
+
 export default {
     name: "MessageFile",
     data() {
@@ -71,6 +65,7 @@ export default {
         };
     },
     components:{
+        Image
     },
     props:{
         msg:Object
@@ -98,33 +93,6 @@ export default {
                 }
             }
             return fmt;
-        },
-        downloadFile(file){
-            let blob = new Blob(file.data);
-            // 获取heads中的filename文件名
-            let downloadElement = document.createElement("a");
-            // 创建下载的链接
-            downloadElement.href = window.URL.createObjectURL(blob);
-            // 下载后文件名
-            downloadElement.download = file.name;
-            document.body.appendChild(downloadElement);
-            // 点击下载
-            downloadElement.click();         // 下载完成移除元素
-            document.body.removeChild(downloadElement);
-            // 释放掉blob对象
-        },
-        //计算文件大小
-        getSize(value){
-            if(null==value||value==''){
-                return "0 B";
-            }
-            let unitArr = ["B","KB","MB","GB","TB","PB","EB","ZB","YB"];
-            let index=0, srcsize = parseFloat(value);
-            index=Math.floor(Math.log(srcsize)/Math.log(1024));
-            let size =srcsize/Math.pow(1024,index);
-            //  保留的小数位数
-            size=parseFloat(size.toFixed(1));
-            return size+" "+unitArr[index];
         },
     }
 }

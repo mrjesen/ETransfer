@@ -1,7 +1,9 @@
 <template>
     <div class="layout-content-wrapper" @dragover.prevent="handleDragOver"
          @dragleave="handleDragLeave"
-         @drop.prevent="handleDrop">
+         @drop.prevent="handleDrop"
+         @paste="handlePaste"
+    >
         <div class="layout-content">
             <div class="p-card p-component p-0 flex">
                 <div class="flex flex-column relative" style="height: calc(100vh - 62px - 4em);">
@@ -127,8 +129,39 @@ export default {
                     this.$emit('chooseFile', file)
                 }
             }
-
-
+        },
+        fileToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        },
+        handlePaste(event) {
+            // event.preventDefault();
+            const items = (event.clipboardData || event.originalEvent.clipboardData)
+                .items;
+            // let pasteFiles = [];
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    // 判断file是不是图片
+                    if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif') {
+                        let that = this;
+                        this.fileToDataURL(file).then(dataUrl => {
+                            const data = {
+                                message: dataUrl,
+                                type: "img",
+                            };
+                            that.$emit('sendMsg', data);
+                        });
+                    }
+                }
+            }
+            // this.handleFiles(pasteFiles);
+            // console.log(pasteFiles);
         },
 
         showCall(e) {
