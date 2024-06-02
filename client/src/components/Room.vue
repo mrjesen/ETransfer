@@ -148,7 +148,7 @@ export default {
                 if (item.kind === 'file') {
                     const file = item.getAsFile();
                     // 判断file是不是图片
-                    if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif') {
+                    if (file.type.startsWith('image/') && file.size >= 0) {
                         let that = this;
                         this.fileToDataURL(file).then(dataUrl => {
                             const data = {
