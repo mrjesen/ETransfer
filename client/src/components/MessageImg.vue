@@ -26,7 +26,9 @@
                     class="cursor-pointer  text-blue-500 text-700 inline-block font-medium border-1 surface-border p-3  border-round"
                     style="word-break: break-word; max-width: 80%;">
                     <div class="inline-block mr-3">
-                        <span class="mb-2 inline-block cursor-pointer ">{{msg.data.message}}</span>
+                        <span class="mb-2 inline-block cursor-pointer ">
+                            <Image alt="Image" :src="msg.data.message" width="250" preview></Image>
+                        </span>
                     </div>
                 </div>
                 <p class="text-700  text-sm mt-1">{{ formatTime(msg.time) }}
