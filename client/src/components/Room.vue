@@ -40,7 +40,7 @@
 
                     </div>
                     <div class="user-message-container p-3 md:px-4 lg:px-6 lg:py-4 mt-2 overflow-y-auto flex-1"
-                         style="height: auto">
+                         style="height: auto" ref="messageContainer">
                         <div v-for="(msg,index) in messages" :key="index">
                             <MessageText v-if="msg.data.type==='message'" :msg="msg"></MessageText>
                             <MessageFile v-else-if="msg.data?.type==='file'" :msg="msg"></MessageFile>
@@ -120,6 +120,9 @@ export default {
         })
     },
     methods: {
+        scrollToBottom() {
+            this.$refs.messageContainer.scrollTop = this.$refs.messageContainer.scrollHeight;
+        },
         handleDragOver(event) {
             event.preventDefault();
         },

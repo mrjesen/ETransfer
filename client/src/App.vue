@@ -3,7 +3,7 @@
     <div class="body" :class="{isResize:isResize}">
         <Loading v-if="!wsConnection" :hint="hint"></Loading>
         <CreateRoom v-if="wsConnection && !isCreatedRoom" @createRoom="createRoom"></CreateRoom>
-        <Room v-if="wsConnection && isCreatedRoom" :room-id="roomId" :is-connected="isConnected"
+        <Room v-if="wsConnection && isCreatedRoom" ref="chatRoom" :room-id="roomId" :is-connected="isConnected"
               :can-send="canSend" :messages="messages"
               @sendMsg="sendPcMsg"
               @share-screen="createScreenShare"
@@ -385,6 +385,7 @@ export default {
                             from: "other",
                             time: new Date().getTime()
                         })
+                        this.$refs.chatRoom.scrollToBottom()
                     }
                 }
             } else {
