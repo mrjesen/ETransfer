@@ -11,7 +11,9 @@
         </Room>
         <div v-show="showScreenShare" ref="screen" id="screen" draggable="true"
              @dragstart.self="dragStartScreen"
-             @drag.self="dragEndScreen">
+             @dragend.self="dragEndScreen"
+             :style="{ left: screenLeft+'px', top: screenTop+'px' }"
+        >
              <!-- 此处必须是muted+autoplay 否则播放会黑屏 -->
             <video ref="screenVideo" autoplay muted poster="data:image/png;base64,"></video>
             <div class="point top" @mousedown="startResizeScreen" @touchstart="startResizeScreen"></div>
@@ -85,8 +87,10 @@ export default {
             // div可修改的最小宽高
             minW: 100,
             minH: 100,
-            direc: ""
-
+            direc: "",
+            // 共享屏幕窗口的动态位置
+            screenLeft: 100,
+            screenTop: 260,
         }
     },
     setup() {
@@ -591,7 +595,10 @@ export default {
 
         },
         dragEndScreen(e) {
-            const dx = e.clientX - this.screenStartX;
+            if(e.screenX ==0 && e.screenY==0){
+                return
+            }
+            const dx = e.clientX - this.screenStartX; //
             const dy = e.clientY - this.screenStartY;
             let newLeft = this.screenStartLeft + dx;
             let newTop = this.screenStartTop + dy;
@@ -605,10 +612,8 @@ export default {
             } else if (newLeft > (window.innerWidth - this.$refs.screen.offsetWidth)) {
                 newLeft = window.innerWidth - this.$refs.screen.offsetWidth
             }
-            this.$refs.screen.style.left = newLeft + 'px';
-            this.$refs.screen.style.top = newTop + 'px';
-
-
+            this.screenLeft = newLeft;
+            this.screenTop = newTop;
         },
         touchStartScreen(e) {
             this.screenStartX = e.targetTouches[0].clientX
@@ -723,8 +728,6 @@ header {
 
 #screen {
     position: fixed;
-    left: 100px;
-    top: 260px;
     width: 33vw;
     height: 25vw;
     background: #000;
